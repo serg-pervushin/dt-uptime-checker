@@ -1,10 +1,10 @@
 <?php
-// Чтение списка сайтов из файла monitors.json
-$monitors = json_decode(file_get_contents('monitors.json'), true);
+// Чтение списка сайтов из файла sites.json
+$sites = json_decode(file_get_contents('json/sites.json'), true);
 
 // Создание или чтение файла results.json
-if (file_exists('results.json')) {
-    $results = json_decode(file_get_contents('results.json'), true);
+if (file_exists('json/results.json')) {
+    $results = json_decode(file_get_contents('json/results.json'), true);
 } else {
     $results = [];
 }
@@ -39,9 +39,9 @@ function sendTelegramMessage($message)
 }
 
 // Проверка доступности сайтов
-foreach ($monitors as $monitor) {
-    $name = $monitor['name'];
-    $url = $monitor['url'];
+foreach ($sites as $site) {
+    $name = $site['name'];
+    $url = $site['url'];
 
     $start = microtime(true);
     $headers = get_headers($url);
@@ -88,4 +88,4 @@ foreach ($monitors as $monitor) {
 }
 
 // Сохранение результатов в файл results.json
-file_put_contents('results.json', json_encode($results, JSON_PRETTY_PRINT));
+file_put_contents('json/results.json', json_encode($results, JSON_PRETTY_PRINT));
