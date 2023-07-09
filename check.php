@@ -77,7 +77,7 @@ function checkCertificate($name, $url)
 }
 
 // Проверка доступности сайтов
-function checkWebsite($site)
+function checkWebsite($site, &$results)
 {
     $name = $site['name'];
     $url = $site['url'];
@@ -106,6 +106,18 @@ function checkWebsite($site)
                 $message = "Статус сайта $name изменился на $status_code";
                 sendTelegramMessage($message);
             }
+        } else {
+            // Если сайта нет в результате, добавляем его в массив
+            $results[$name] = [];
+
+            // Записываем текущий результат в results.json
+            $results[$name] = [
+                'status_code' => $status_code,
+                'response_time' => $response_time,
+            ];
+
+            $message = "В мониторинг добавлен новый сайт $name";
+            sendTelegramMessage($message);
         }
 
         // Если код ответа отличается от кода 200, отправляем сообщение в Telegram
@@ -141,8 +153,8 @@ if (file_exists('json/results.json')) {
 
 // проверяем
 foreach ($sites as $site) {
-    checkWebsite($site);
+    checkWebsite($site, $results);
 }
 
 // Сохранение результатов в файл results.json
-file_put_contents('json/results.json', json_encode($results, JSON_PRETTY_PRINT));
+file_put_contents('json/results.json', json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
